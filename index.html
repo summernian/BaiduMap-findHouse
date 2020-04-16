@@ -14,7 +14,7 @@
 <meta name="x5-page-mode" content="app">
 <meta name="flexible" content="initial-dpr=1" />
 <script type="text/javascript" src="js/flexible.js"></script>
-<title>地图找房-移动触屏端</title>
+<title>地图找房-移动触屏端-百度地图标签魔改版</title>
 <link rel="stylesheet" href="css/style.css">
 <script type="text/javascript" src="https://api.map.baidu.com/api?ak=Bt3LytvRELNOEBUqzm9EaIGA&v=2.0&type=little&s=1"></script>
 </head>
@@ -342,7 +342,8 @@
 	$map.centerAndZoom(point, 12);
 	// $map.disableDragging();//禁止拖拽
 	// $map.disablePinchToZoom();//禁止双指缩放
-	// $map.disableDoubleClickZoom();//禁止双击放大	
+	// $map.disableDoubleClickZoom();//禁止双击放大
+	
 	getMapInfo($map);
 	
 	// 点击地图
@@ -564,7 +565,8 @@
 			
 		}
 		$map.addOverlay(marker);
-	}	
+	}
+	
 	// 底部弹窗
 	function showHouseModal(opt) {
 		var $form = $('#house-form');
@@ -702,7 +704,8 @@
 		var arr = path.split('.');
 		var ext = arr[arr.length-1];
 		return path+'_'+w+'x'+h+'.'+ ext;
-	}//获取缩略图
+	}//获取缩略图
+
 	function reload(){
 		window.location.reload();
 	}//刷新页面
@@ -954,6 +957,7 @@
 				$('.search-result').hide();
 			}
 		}
-	});</script>
+	});
+</script>
 </body>
 </html>
