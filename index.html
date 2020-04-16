@@ -888,6 +888,15 @@
 		}
 	});
 	
+	// 取消搜索
+	$('#cancelBtn').click(function(){
+		$(this).hide(); // 自身也要隐藏
+		$('#search-wrap').hide();
+		$('#search_list').css('width','8.5rem').find('input#search-input').css('width','7.5rem');
+		// 取消搜索的逻辑
+		// 从这里开始
+	});
+	
 	// 搜索
 	$('#search-input').focus(function(){
 		console.log('准备搜索啦！');
@@ -945,14 +954,6 @@
 				$('.search-result').hide();
 			}
 		}
-	});	
-	$('#cancelBtn').click(function(){
-		$(this).hide(); // 自身也要隐藏
-		$('#search-wrap').hide();
-		$('#search_list').css('width','8.5rem').find('input#search-input').css('width','7.5rem');
-		// 取消搜索的逻辑
-		// 从这里开始写
-	});
-</script>
+	});</script>
 </body>
 </html>
