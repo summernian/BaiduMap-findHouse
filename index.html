@@ -14,7 +14,7 @@
 <meta name="x5-page-mode" content="app">
 <meta name="flexible" content="initial-dpr=1" />
 <script type="text/javascript" src="js/flexible.js"></script>
-<title>地图找房</title>
+<title>地图找房-移动触屏端</title>
 <link rel="stylesheet" href="css/style.css">
 <script type="text/javascript" src="http://api.map.baidu.com/api?ak=Bt3LytvRELNOEBUqzm9EaIGA&v=2.0&type=little"></script>
 </head>
@@ -945,14 +945,12 @@
 				$('.search-result').hide();
 			}
 		}
-	});	
-	// 取消搜索
+	}); 	// 取消搜索
 	$('#cancelBtn').click(function(){
 		$(this).hide(); // 自身也要隐藏
 		$('#search-wrap').hide();
 		$('#search_list').css('width','8.5rem').find('input#search-input').css('width','7.5rem');
 		// 取消搜索的逻辑
-		
 		
 	});
 </script>
