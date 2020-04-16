@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta name="full-screen" content="yes">
+<meta name="browsermode" content="application">
+<meta name="x5-fullscreen" content="true">
+<meta name="x5-page-mode" content="app">
+<meta name="flexible" content="initial-dpr=1" />
+<script type="text/javascript" src="js/flexible.js"></script>
+<title>地图找房</title>
+<link rel="stylesheet" href="css/style.css">
+<script type="text/javascript" src="http://api.map.baidu.com/api?ak=Bt3LytvRELNOEBUqzm9EaIGA&v=2.0&type=little"></script>
+</head>
+<body>
+<!-- Toast -->
+<div id="toast" class="toast" style="display: none">
+    <div class="toast-block">
+        <span>提示内容</span>
+    </div>
+</div>
+<!--Html start-->
+<!--头部链接栏-->
+<div class="top-fixed-head">
+	<div class="navbar">
+		<a href="javascript:history.go(-1);" class="icon-back black"></a>
+		<span id="search_list">
+			<i class="icon-search"></i>
+			<input type="text" name="search" id="search-input" class="text-14" value="" placeholder="请输入楼盘名或地名">
+		</span>
+		<span id="cancelBtn" onclick="javascript:history.back();">取消</span>
+	</div>
+	<div id="search-wrap" style="">
+		<div class="hot-search" style="display: none;">
+			<div class="hot-search-title">最近热搜</div>
+			<div class="hot-search-list">
+				<div class="hot-search-item">
+					<a href="javascript:;" data-id="01023">某个楼盘</a>
+				</div>
+			</div>
+		</div>
+		<div class="history-search" style="display: none;">
+			<div class="history-search-title">历史搜索</div>
+			<div class="history-search-list">
+				<div class="history-search-item"><a href="javascript:;">某个搜索关键字1</a><span class="history-clear"></span></div>
+				<div class="history-search-item"><a href="javascript:;">某个搜索关键字2</a><span class="history-clear"></span></div>
+				<div class="history-search-item"><a href="javascript:;">高速</a><span class="history-clear"></span></div>
+				<div class="history-search-item"><em>清空历史记录</em></div>
+			</div>
+		</div>
+		<div class="search-result" style="display: none;">
+			<div class="search-value" style="">
+				<a href="javascript:;">搜索“输入的内容”</a>
+			</div>
+			<div class="search-result-list">
+				<a href="javascript:;" data-houseid="1107" data-region_id="91" class="search-result-item">
+					<div class="row-wrap">
+						<h2 class="text-ellipsis"><i class="red">新地中心</i></h2>
+						<i class="selltypes">售完</i>
+					</div>
+					<div class="row-wrap" style="margin-top: 0.24rem;">
+						<span class="result-area">政务区-天鹅湖</span>
+						<span class="result-price">100元/㎡</span>
+					</div>
+				</a>
+				<div class="no-result" style="display: none;">
+					<div class="no-res-data"></div>
+					<p>抱歉，没有符合条件的结果</p>
+					<a href="javascript:;">试试条件筛选  <i></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--筛选项-->
+<div id="mask" style="display: none;"></div>
+<div class="common-screen" id="screen">
+	<ul class="tab">
+		<li class="tab-li">
+			<span class="screen-n">区域</span>
+			<i class="tab-icon"></i>
+			<div class="dropdown-menu" style="display: none;">
+				<ul class="sub">
+					<li class="active">城区</li>
+					<li class="">地铁</li>
+				</ul>
+				<div class="flex-box">
+					<div class="screen-lv">
+						<ul style="">
+							<li class="">全城</li>
+							<li class="" data-xy='{"mapx":"117.267073","mapy":"31.857368"}' data-region="90">蜀山区</li>
+							<li class="" data-xy='{"mapx":"117.231283","mapy":"31.820495"}' data-region="91">政务区</li>
+						</ul>
+					</div>
+					<div class="screen-lv">
+						<!--空的ul 不能删掉 因为全城不需要子站点-->
+						<ul style="display: none;"></ul>
+						<ul style="display: none;">
+							<li class="">不限</li>
+							<li class="" data-bzone="103">五里墩</li>
+							<li class="" data-bzone="107">三里庵</li>
+							<li class="" data-bzone="108">黄潜望</li>
+							<li class="" data-bzone="142">大蜀山</li>
+							<li class="" data-bzone="702">南七里</li>
+							<li class="" data-bzone="143">井岗</li>
+						</ul>
+						<ul style="display: none;">
+							<li class="">不限</li>
+							<li class="" data-bzone="104">天鹅湖</li>
+							<li class="" data-bzone="141">奥体中心</li>
+							<li class="" data-bzone="694">省立医院南区</li>
+						</ul>
+					</div>
+				</div>
+				<div class="flex-box" style="display: none;">
+					<div class="screen-lv">
+						<ul style="">
+							<li class="">不限</li>
+							<li class="" data-line="1">一号线</li>
+							<li class="" data-line="2">二号线</li>
+						</ul>
+					</div>
+					<div class="screen-lv">
+						<!--空的ul 不能删掉 因为不限不需要子站点-->
+						<ul style="display: none;"></ul>
+						<ul style="display: none;">
+							<li class="">不限</li>
+							<li class="" data-station="63">合肥火车站</li>
+							<li class="" data-station="192">长淮站</li>
+							<li class="" data-station="67">明光路站</li>
+						</ul>
+						<ul style="display: none;">
+							<li class="">不限</li>
+							<li class="" data-station="194">南岗站</li>
+							<li class="" data-station="197">桂庄站</li>
+							<li class="" data-station="60">汽车西站</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</li>
+		<li class="tab-li">
+			<span class="screen-n">户型</span>
+			<i class="tab-icon"></i>
+			<div class="dropdown-menu" style="display: none;">
+				<div class="dropdown-list">
+					<div class="dropdown-item active">
+						<span>不限</span>
+					</div>
+					<div class="dropdown-item">
+						<span>一居</span>
+					</div>
+					<div class="dropdown-item">
+						<span>二居</span>
+					</div>
+					<div class="dropdown-item">
+						<span>三居</span>
+					</div>
+				</div>
+			</div>
+		</li>
+		<li class="tab-li">
+			<span class="screen-n">价格</span>
+			<i class="tab-icon"></i>
+			<div class="dropdown-menu has-sub has-bottom" style="display: none;">
+				<ul class="sub">
+					<li class="">总价</li>
+					<li class="active">单价</li>
+				</ul>
+				<div class="flex-box">
+					<div class="screen-lv">
+						<ul style="display: none;">
+							<li class="active">不限</li>
+							<li class=""><span>80万以下</span></li>
+							<li class=""><span>80万-100万</span></li>
+							<li class=""><span>100万-120万</span></li>
+							<li class=""><span>120万-140万</span></li>
+							<li class=""><span>140万-160万</span></li>
+							<li class=""><span>160万-200万</span></li>
+							<li class=""><span>200万以上</span></li>
+						</ul>
+						<ul style="">
+							<li class="active">不限</li>
+							<li class=""><span>8000元以下</span></li>
+							<li class=""><span>8000-10000</span></li>
+							<li class=""><span>10000-12000</span></li>
+							<li class=""><span>12000-14000</span></li>
+							<li class=""><span>14000-16000</span></li>
+							<li class=""><span>16000-20000</span></li>
+							<li class=""><span>20000元以上</span></li>
+						</ul>
+					</div>
+				</div>
+				<div class="screen-b">
+					<input type="text" pattern="[0-9]*" oninput="value=value.replace(/[^\d]/g,'')" name="min-price" class="text-15" id="min-price" value="" placeholder="最低单价/元">
+					<span class="">-</span>
+					<input type="text" pattern="[0-9]*" oninput="value=value.replace(/[^\d]/g,'')" name="max-price" class="text-15" id="max-price" value="" placeholder="最高单价/元">
+					<a href="javascript:;" class="" id="priceLink">确定</a>
+				</div>
+			</div>
+		</li>
+		<li class="tab-li">
+			<span class="screen-n">筛选</span>
+			<i class="tab-icon"></i>
+			<div class="dropdown-menu" style="display: none;">
+				<div class="dropdown-t">
+					<div class="dropdown-row">
+						<h2 class="">面积㎡</h2>
+						<div class="row-wrap" data-type="a">
+							<span class="row-item" data-val="a1">50㎡以下</span>
+							<span class="row-item" data-val="a2">50-70㎡</span>
+							<span class="row-item" data-val="a3">70-90㎡</span>
+							<span class="row-item" data-val="a4">90-110㎡</span>
+							<span class="row-item" data-val="a5">110-130㎡</span>
+							<span class="row-item" data-val="a6">130-150㎡</span>
+							<span class="row-item" data-val="a7">150-200㎡</span>
+							<span class="row-item" data-val="a8">200㎡以上</span>
+						</div>
+					</div>
+					<div class="dropdown-row">
+						<h2 class="">楼盘特色</h2>
+						<div class="row-wrap" data-type="c">
+							<span class="row-item" data-val="c634">刚需房</span>
+							<span class="row-item" data-val="c590">改善房</span>
+							<span class="row-item" data-val="c592">品牌开发商</span>
+							<span class="row-item" data-val="c682">经济两房</span>
+							<span class="row-item" data-val="c589">学校附近</span>
+							<span class="row-item" data-val="c681">新开盘</span>
+							<span class="row-item" data-val="c668">大型社区</span>
+							<span class="row-item" data-val="c652">装修房</span>
+							<span class="row-item" data-val="c650">花园洋房</span>
+						</div>
+					</div>
+					<div class="dropdown-row">
+						<h2 class="">物业类型</h2>
+						<div class="row-wrap" data-type="t">
+							<span class="row-item" data-val="t1">公寓</span>
+							<span class="row-item" data-val="t2">住宅</span>
+							<span class="row-item" data-val="t3">写字楼</span>
+							<span class="row-item" data-val="t4">商铺</span>
+							<span class="row-item" data-val="t5">别墅</span>
+						</div>
+					</div>
+					<div class="dropdown-row">
+						<h2 class="">销售状态</h2>
+						<div class="row-wrap" data-type="h">
+							<span class="row-item" data-val="h9">待售</span>
+							<span class="row-item" data-val="h6">在售</span>
+							<span class="row-item" data-val="h3">售完</span>
+						</div>
+					</div>
+					<div class="dropdown-row">
+						<h2 class="">开盘时间</h2>
+						<div class="row-wrap" data-type="d">
+							<span class="row-item" data-val="d1">前三月</span>
+							<span class="row-item" data-val="d2">上月</span>
+							<span class="row-item" data-val="d3">本月</span>
+							<span class="row-item" data-val="d4">下月</span>
+							<span class="row-item" data-val="d5">三月内</span>
+						</div>
+					</div>
+					<div class="dropdown-row">
+						<h2 class="">特色看房</h2>
+						<div class="row-wrap" data-type="vh">
+							<span class="row-item" data-val="v2">VR看房</span>
+							<span class="row-item" data-val="w3">航拍</span>
+						</div>
+					</div>
+				</div>
+				<div class="dropdown-b">
+					<a href="javascript:;" class="clear" id="clearLink">清空</a>
+					<a href="javascript:;" class="submit" id="choonseLink">确定</a>
+				</div>
+			</div>
+		</li>
+	</ul>
+</div>
+<div id="main">
+	<!-- 顶部弹出层 -->
+	<div id="top-toast"></div>
+	<!-- 地图 -->
+	<div id="map"></div>
+	<!-- 底部楼盘弹出层 -->
+	<div id="house-form">
+		<a href="#" target="_blank" class="form-wrap">
+			<div class="house-img-wrap">
+				<img src="/" alt="">
+				<div class="icons-wrap">
+					<i class="icon-vr"></i>
+					<i class="icon-aerial"></i>
+				</div>
+			</div>
+			<div class="house-infomation">
+				<h2 class="house-name text-ellipsis"></h2>
+				<p class="house-price"></p>
+				<p class="house-area text-ellipsis"></p>
+				<p class="house-tips">
+					<span class="house-tip house-selling">在售</span>
+					<span class="house-tip">公寓</span>
+					<span class="house-tip">单身公寓</span>
+					<span class="house-tip">低单价</span>
+				</p>
+			</div>
+			<div class="house-status eft">
+				<i class="icon_discount"></i>
+				<span class="text-ellipsis">这个就是e房团的折扣送东西打折</span>
+			</div>
+			<div class="house-status ranking">
+				<i class="icon_hot"></i>
+				<span class="text-ellipsis">合肥咨询榜第107名</span>
+			</div>
+			<div class="house-status kft">
+				<i class="icon_car"></i>
+				<span class="text-ellipsis">反正就是要去看房子的看房团</span>
+			</div>
+		</a>
+	</div>
+</div>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript">
+	var site_id = '1'; // 合肥
+	var center = '117.291466,31.867678'; // 合肥
+	var href = '//m.xafc.com/hf/house/'; // 楼盘地址
+	var url = 'https://apix.xafc.com/mobilebase/map_filter_list/v1.do'; // 请求接口地址
+	
+	var zIndex = 0; // 楼盘标注的层级
+	var $map = new BMap.Map("map",{ //设置最大最小缩放级别
+		minZoom : 10,
+		maxZoom : 18
+	}); //实例化地图
+	
+	var searchData = {}; // 筛选条件
+	var houseNum = 0;
+	
+	var point = new BMap.Point(center.split(',')[0],center.split(',')[1]);
+	$map.centerAndZoom(point, 12);
+	// $map.disableDragging();//禁止拖拽
+	// $map.disablePinchToZoom();//禁止双指缩放
+	// $map.disableDoubleClickZoom();//禁止双击放大	
+	getMapInfo($map);
+	
+	// 点击地图
+	$map.addEventListener("click", function(e){   
+		if(!e.overlay) {
+			$('a.house-point').removeClass('active');
+			// 隐藏楼盘详情
+			$('#house-form').animate({'opacity':0, 'bottom': '-100%'},400);
+		}
+	});
+	// 拖动地图
+	$map.addEventListener("dragend", function(){
+		searchData.region_id = ''; // 清空区域id
+		searchData.bzone_id = ''; // 清空商圈id
+		searchData.line = ''; // 清空地铁线id
+		searchData.station = ''; // 清空地铁站id
+		// 隐藏楼盘详情
+		$('#house-form').animate({'opacity':0, 'bottom': '-100%'},400);
+		getMapInfo(this);
+	});
+	// 缩放地图
+	$map.addEventListener("zoomend", function(){    
+	    console.log("地图缩放至：" + this.getZoom() + "级");
+		getMapInfo(this);
+	});
+	
+	function getMapInfo(map) {
+		var obj = {}; // 地图属性集合
+		var bs = map.getBounds();
+		var ne = bs.getNorthEast(); //东北
+		var sw = bs.getSouthWest(); //西南
+		// ne.lng;   //可视区域右上角经度 <
+		// ne.lat;   //可视区域右上角纬度 <
+		// sw.lng;   //可视区域左下角经度 >
+		// sw.lat;   //可视区域左上角纬度 >
+		obj.zoom = map.getZoom();
+		obj.data = {
+			wn: sw.lng+','+ne.lat,
+			es: ne.lng+','+sw.lat
+		}
+		// 直接清除地图覆盖物，会导致报错
+		// 看似不会影响页面正常运行，但有觉得会有隐藏bug
+		// 稳妥起见，定时器走起~
+		setTimeout(() => {
+			map.clearOverlays();
+			if(obj.zoom < 14) {
+				getHouseOrArea({
+					site_id: site_id
+				},function(result) {
+					if(result.code == '401') {
+						showToast(result.data);
+						return;
+					}
+					var res = JSON.parse(result);
+					if(res.code == '200') {
+						var total = 0;
+						$.each(res.data,function(i,v){
+							total += v.total;
+						});
+						houseNum < total ? houseNum = total : '';
+						drawMap('共'+houseNum+'个楼盘，拖动可查看全部！');
+						addAreaIcon(res.data);
+					}
+				});
+			} else {
+				var data = $.extend({}, {
+					site_id: site_id,
+					wn : obj.data.wn,
+					es : obj.data.es
+				}, searchData); //合并参数
+				getHouseOrArea(data,function(result) {
+					if(result.code == '401') {
+						showToast(result.data);
+						return;
+					}
+					var res = JSON.parse(result);
+					console.log(res);
+					if(res.code == '200') {
+						drawMap('可视范围内楼盘'+res.data.total+'个，拖动可查看全部！');
+						addHouseIcon(res.data.list);
+					}
+				});
+			}
+		},20);
+		return obj;
+	}
+	
+	// 获取数据
+	function getHouseOrArea(data,callBack) {
+		console.log('传参：');
+		console.log(data);
+		$.ajax({
+			url: url,
+			type: 'post',
+			data: data,
+			success:function(result){
+				callBack && (typeof callBack === 'function' ? callBack(result) : console.error('传错参了兄Dei!'));
+			},
+			error: function(result) {
+				showToast('网络错误！请重试！');
+			}
+		});
+	}
+	
+	// 添加区域标签
+	function addAreaIcon(data) {
+		for(var i in data){
+			var obj = data[i];
+			var point = new BMap.Point(obj.map_x,obj.map_y);
+			var option = {
+				type : 1,
+				name : obj.name, //区域名称
+				total : obj.total, //房屋数量
+				region : obj.region_id //区域编号
+			};
+			addMarker(point,option);
+		}
+	}
+	
+	// 添加楼盘标注
+	function addHouseIcon(data) {
+		for(var i in data) {
+			var house = data[i];
+			var point = new BMap.Point(house.map_x,house.map_y);
+			var option = {
+				type : 2,
+				id : house.houseid, //楼盘id
+				name : house.housename, //楼盘名称
+				price : house.price, //楼盘价格
+				region : house.region ,//行政区域
+				bzone : house.bzone, //区块
+				tags : house.tags || '', //标签
+				sellstatus : house.sellstatus, //销售状态
+				eft : house.eft, //e房团
+				kft : house.kft, //看房团
+				ranking : house.ranking, //楼盘热榜
+				area : house.area, //建筑面积
+				is_aerial : house.is_aerial, //航拍
+				is_scene : house.is_scene, //全景
+				coverurl : house.coverurl, //缩略图
+			};
+			addMarker(point,option);
+		}
+	}
+	
+	// 添加区域标注 type: 1、区域标注;  2、楼盘标注;
+	function addMarker(markPoit, opt) {
+		var marker = new BMap.Label("", { position: markPoit });
+		marker.setStyle({ 
+			display: 'inline-block', 
+			width: '0px', 
+			height: '0px', 
+			border: '0px',
+			padding:'0px' 
+		});
+		
+		if(opt.type == 1) {
+			var areaDom = "<a href='javascript:;' class='area-mark'>" +
+								"<h2>"+opt.name+"</h2>" +
+								"<p>"+opt.total+"个楼盘</p>" +
+							"</a>";
+			marker.setContent(areaDom);
+			marker.setOffset(new BMap.Size(-32, -32)); //偏移坐标
+			marker.addEventListener("click", function(e){
+			    console.log("点击了大区标注");  
+				// 获取中心点并设为地图中心，同时放大地图展示级别
+				$map.centerAndZoom(this.point, 15);
+				searchData.region_id = opt.region; // 赋值区域id
+				searchData.bzone_id = ''; // 清空商圈id
+			});
+			
+		} else if(opt.type == 2) {
+			
+			var houseClass = ''; //状态
+			if(opt.sellstatus == '在售') {
+				houseClass = 'house-point selling';
+			} else if(opt.sellstatus == '待售') {
+				houseClass = 'house-point coming';
+			} else {
+				houseClass = 'house-point sellout';
+			};
+			
+			var price = ''; //价格
+			if(opt.price) {
+				if(isNaN(opt.price)) {
+					price = opt.price;
+				} else {
+					price = opt.price + '元/㎡';
+				}
+			} else {
+				price = "待定";
+			}
+			
+			var houseDom = "<a href='javascript:;' class='"+houseClass+"'><i></i>" +
+								"<h2>"+opt.name+"</h2>" +
+								"<p>"+price+"</p>" +
+							"</a>";
+			marker.setContent(houseDom);
+			marker.setOffset(new BMap.Size(-20, -60)); //偏移坐标
+			marker.addEventListener("click", function(e){
+			    console.log("点击了楼盘标注");  
+				$('a.house-point').removeClass('active'); // 移除所有的选中样式 因为标签会重绘（？重置） 所以最好不要用链式操作 分段操作比较保险
+				$(this.V).find('a.house-point').addClass('active');// 添加选中样式
+				
+				// 获取中心点并设为地图中心
+				$map.panTo(this.point,{
+					// noAnimation: true
+				});
+				showHouseModal(opt);
+				// 添加层级 0.5秒后增加层级 
+				// 因为地图中心跳转设置增加动画的话会重绘（？重置）标签样式，所以用定时器触发层级改变的效果
+				// 如果设置noAnimation : true, 则中心点样式不会重置，可以直接设定层级而不用定时器 500ms是动画完成的时间
+				// 在官方文档上没有找到panTo的回调函数，因此设置定时器，如果有回调函数可以在回调函数里设置，定时器设置终归不是标准做法
+				setTimeout(() => {
+					zIndex++;
+					$(this.V).css('z-index',zIndex);
+				},500);
+			});
+			
+		}
+		$map.addOverlay(marker);
+	}	
+	// 底部弹窗
+	function showHouseModal(opt) {
+		var $form = $('#house-form');
+		console.log(opt);
+		// 楼盘地址
+		$form.find('a.form-wrap').attr('href',href+opt.id);
+		// 图片地址
+		$form.find('.house-img-wrap img').attr('src',getThumbSrc(opt.coverurl,240,180));
+		// 小图标
+		if(opt.is_aerial) {
+			$form.find('.icon-aerial').removeClass('invisible');
+		} else {
+			$form.find('.icon-aerial').addClass('invisible');
+		}
+		if(opt.is_scene) {
+			$form.find('.icon-vr').removeClass('invisible');
+		} else {
+			$form.find('.icon-vr').addClass('invisible');
+		}
+		// 楼盘名称
+		$form.find('.house-name').html(opt.name);
+		
+		// 楼盘价格
+		var price = ''; //价格
+		if(opt.price) {
+			if(isNaN(opt.price)) {
+				price = opt.price;
+			} else {
+				price = opt.price + '元/㎡';
+			}
+		} else {
+			price = "待定";
+		}
+		$form.find('.house-price').html(price);
+		
+		// 区域、面积
+		var addr = ''; //区块
+		if(opt.region && opt.bzone) {
+			addr = opt.region +'-'+ opt.bzone;
+		} else {
+			addr = opt.region;
+		};
+		var area = ''; //面积
+		if(opt.area) {
+			if(opt.area.min && opt.area.max) {
+				area = '建面：'+opt.area.min+'-'+opt.area.max+'㎡'
+			} else if(opt.area.min) {
+				area = '建面：'+opt.area.min+'㎡';
+			} else if(opt.area.max) {
+				area = '建面：'+opt.area.max+'㎡';
+			}
+		}
+		$form.find('.house-area').html(addr + ' ' + area);
+		
+		// 状态、标签
+		var houseTip = ''; //状态
+		if(opt.sellstatus == '在售') {
+			houseTip = '<span class="house-tip house-selling">在售</span>';
+		} else if(opt.sellstatus == '待售') {
+			houseTip = '<span class="house-tip house-coming">待售</span>';
+		} else {
+			houseTip = '<span class="house-tip house-sellout">售完</span>';
+		};
+		$form.find('.house-tips').html(houseTip);
+		if(opt.tags && $.isArray(opt.tags)) { //标签
+			$.each(opt.tags,function(i,v){
+				if(i<3) { //只能存在3个
+					$form.find('.house-tips').append('<span class="house-tip">'+v.tagname+'</span>');
+				}
+			});
+		}
+		
+		// e房团、看房团、楼盘热榜
+		if(opt.eft) {
+			$form.find('.eft').removeClass('invisible').find('span').html(opt.eft);
+		} else {
+			$form.find('.eft').addClass('invisible');
+		}
+		if(opt.ranking) {
+			$form.find('.ranking').removeClass('invisible').find('span').html(opt.ranking);
+		} else {
+			$form.find('.ranking').addClass('invisible');
+		}
+		if(opt.kft) {
+			$form.find('.kft').removeClass('invisible').find('span').html(opt.kft);
+		} else {
+			$form.find('.kft').addClass('invisible');
+		}
+		
+		$('#house-form').css({'opacity':0, 'bottom': '-100%'});
+		$('#house-form').animate({
+			'opacity':1,
+			'bottom': '0'
+		},400);
+	}
+	
+	// 顶部弹窗
+	var drawTimer = null;
+	function drawMap(str){
+		$('#top-toast').css({'opacity':0, 'top': '-0.8rem'}).html(str);
+		$('#top-toast').animate({
+			'opacity':1,
+			'top': '0'
+		},400);
+		clearTimeout(drawTimer);
+		drawTimer = setTimeout(function(){
+		    $('#top-toast').animate({
+		        'opacity':0,
+		        'top': '-0.8rem'
+		    },400);
+			drawTimer = null;
+		},1500);
+	}
+	
+	function showToast(str,timer) {
+		var str = $.trim(str) || '出错咯！',
+			timer = timer || 1000; 
+	    $('.toast').fadeIn(100);
+	    $('.toast span').html(str);
+	    $('.toast .toast-block').animate({
+	        'opacity':1,
+	        'top': '25%'
+	    },200);
+	    setTimeout(function(){
+	        $('.toast .toast-block').animate({
+	            'opacity':0,
+	            'top': '20%'
+	        },function(){
+	            $('.toast').fadeOut(200);
+	        });
+	    },timer);
+	}//消息提示框
+	
+	function getThumbSrc(path,w,h) {
+		var arr = path.split('.');
+		var ext = arr[arr.length-1];
+		return path+'_'+w+'x'+h+'.'+ ext;
+	}//获取缩略图
+	function reload(){
+		window.location.reload();
+	}//刷新页面
+	
+	
+	//阻止冒泡
+	$('.dropdown-menu').on('click',function(e){
+		e.stopPropagation();
+		console.log('点击筛选咯！');
+	});
+	//导航弹出隐藏
+	$('#screen').on('click','.tab-li',function(e){
+		e.stopPropagation();
+		var $this = $(this);
+	
+		if($this.hasClass('active')) {
+			$this.removeClass('active').find('.dropdown-menu').hide();
+			$('#mask').hide();
+		} else {
+			$this.siblings().removeClass('active').find('.dropdown-menu').hide();
+			$this.addClass('active').find('.dropdown-menu').show();
+			$('#mask').show();
+		}
+	});
+	$('#mask').on('click',function(){
+		$('.tab-li').removeClass('active');
+		$('.dropdown-menu').hide();
+		$('#mask').hide();
+	});
+	
+	$('.sub').on('click','li',function(){
+		var $this = $(this);
+		$this.addClass('active').siblings('li').removeClass('active');
+		var _pIndex = $this.parents('.tab-li').index();
+		var _parentLi = $this.parents('.tab-li');
+		
+		if(_pIndex == '0') {
+			_parentLi.find('.flex-box').hide();
+			_parentLi.find('.flex-box').eq($this.index()).show();
+		} else if(_pIndex == '2') {
+			_parentLi.find('.flex-box ul').hide();
+			_parentLi.find('.flex-box ul').eq($this.index()).show();
+			
+			if($this.index()) {
+				$('#min-price').attr('placeholder','最低单价/元').val('');
+				$('#max-price').attr('placeholder','最高单价/元').val('');
+			} else {
+				$('#min-price').attr('placeholder','最低总价/万元').val('');
+				$('#max-price').attr('placeholder','最高总价/万元').val('');
+			}
+		}
+	});
+	
+	// 区域的第一列操作
+	$('.tab-li:eq(0) .flex-box').find('.screen-lv:eq(0)').on('click','li',function(){
+		var $this = $(this);
+		// nav标签序列号 0、地区；1、地铁
+		var _subIndex = $this.parents('.dropdown-menu').find('.sub li.active').index();
+		
+		var _parentScreen = $this.parents('.screen-lv');
+		$this.addClass('active').siblings('li').removeClass('active');
+		_parentScreen.next('.screen-lv').find('ul').eq($this.index()).show().siblings('ul').hide();
+		
+		// 搜索逻辑
+		if(_subIndex == 0) { //地区
+			if($this.attr('data-xy') && $this.index() != 0) {
+				// 跳转区域
+				var _point = JSON.parse($this.attr('data-xy'));
+				
+				// 赋值
+				searchData.region_id = $this.attr('data-region'); //区域赋值
+				searchData.line = '';//地铁线取消
+				
+				// 区域大小变化会触发搜索，从而添加楼盘标注；如果不改变大小需要请求才有数据。
+				// 同样要触发ajax，不如手动切换一次，因为有定时器的缘故，缩放层级可能会导致大区域标注没来得及清除，估缩放等级要超过出现大图标的等级（大于13）
+				$map.centerAndZoom(new BMap.Point(_point.mapx,_point.mapy), 16);
+				$map.centerAndZoom(new BMap.Point(_point.mapx,_point.mapy), 15);
+			} else if($this.index() == 0) {
+				console.log('点了全城！');
+				$map.centerAndZoom(point, 12);
+				$('.tab-li:eq(0) .flex-box li').removeClass('active');
+				$('.tab-li').removeClass('active');
+				$('.dropdown-menu').hide();
+				$('#mask').hide();
+			}
+		} else {
+			// 点了地铁 此处不做处理
+			console.log('点了地铁！');
+			// 赋值
+			searchData.region_id = '';// 区域取消
+			searchData.line = $this.attr('data-line');// 地铁线赋值
+		}
+	});
+	
+	$('.tab-li:eq(0) .flex-box').find('.screen-lv:eq(1)').on('click','li',function(){
+		var $this = $(this);
+		// nav标签序列号 0、地区；1、地铁
+		var _subIndex = $this.parents('.dropdown-menu').find('.sub li.active').index();
+		
+		// 移除第二列所有li的active，给当前li添加选中
+		$this.parents('.screen-lv').find('li').removeClass('active');
+		$this.addClass('active');
+		
+		// 选择不限
+		if(!$this.attr('data-bzone') && !$this.attr('data-station')) {
+			$('.tab-li').removeClass('active');
+			$('.dropdown-menu').hide();
+			$('#mask').hide();
+		}
+		// 选择商圈
+		if($this.attr('data-bzone')) {
+			// 移除地铁站的active
+			$('.tab-li:eq(0) .flex-box:eq(1) li').removeClass('active');
+			$('.tab-li:eq(0) .flex-box:eq(1) .screen-lv:eq(1) ul').hide();
+			
+			searchData.station = '';// 地铁站取消
+			searchData.bzone_id = $this.attr('data-bzone');// 商圈赋值
+			console.log(searchData);
+			var data = $.extend({}, {
+				site_id: site_id
+			}, searchData); //合并参数
+			
+			setTimeout(() => {
+				$map.clearOverlays();
+				getHouseOrArea(data,function(result){
+					if(result.code == '401') {
+						showToast(result.data);
+						return;
+					}
+					var res = JSON.parse(result);
+					console.log(res);
+					if(res.code == '200') {
+						drawMap('搜索到楼盘'+res.data.total+'个，拖动可查看全部！');
+						addHouseIcon(res.data.list);
+					}
+					if(res.data.list[0]) {
+						$map.panTo(new BMap.Point(res.data.list[0].map_x,res.data.list[0].map_y),{
+							noAnimation: true
+						});
+					}
+					// 关闭筛选层
+					$('.tab-li').removeClass('active');
+					$('.dropdown-menu').hide();
+					$('#mask').hide();
+				});
+			},20);
+		}
+		// 选择地铁站
+		if($this.attr('data-station')) {
+			// 移除商圈的active
+			$('.tab-li:eq(0) .flex-box:eq(0) li').removeClass('active');
+			$('.tab-li:eq(0) .flex-box:eq(0) .screen-lv:eq(1) ul').hide();
+			
+			searchData.bzone_id = '';// 商圈取消
+			searchData.station = $this.attr('data-station');// 地铁站赋值
+			console.log(searchData);
+			
+			var data = $.extend({}, {
+				site_id: site_id
+			}, searchData); //合并参数
+			setTimeout(() => {
+				$map.clearOverlays();
+				getHouseOrArea(data,function(result){
+					if(result.code == '401') {
+						showToast(result.data);
+						return;
+					}
+					var res = JSON.parse(result);
+					console.log(res);
+					if(res.code == '200') {
+						drawMap('搜索到楼盘'+res.data.total+'个，拖动可查看全部！');
+						addHouseIcon(res.data.list);
+					}
+					if(res.data.list[0]) {
+						$map.centerAndZoom(new BMap.Point(res.data.list[0].map_x,res.data.list[0].map_y), 15);
+					}
+					// 关闭筛选层
+					$('.tab-li').removeClass('active');
+					$('.dropdown-menu').hide();
+					$('#mask').hide();
+				});
+			},20);
+		}
+	});
+	
+	// 搜索
+	$('#search-input').focus(function(){
+		console.log('准备搜索啦！');
+		// 筛选窗口关闭
+		$('.tab-li').removeClass('active');
+		$('.dropdown-menu').hide();
+		$('#mask').hide();
+		// 搜索栏出现
+		$('#search-wrap').show();
+		// 取消按钮出现、搜索栏变短
+		$('#cancelBtn').show();
+		$('#search_list').css('width','7.5rem').find('input#search-input').css('width','6.5rem');
+		$('.hot-search').show();//热门搜索出现
+		$('.history-search').show(); //历史搜索出现
+		$('.search-result').hide(); //搜索结果隐藏
+	});
+	var cpLock = false;
+	$('#search-input').on('compositionstart', function () {
+		// 输入汉语拼音时锁住搜索框，不进行搜索，或者从汉语拼音转到字母时也可触发
+		cpLock = true;
+	});
+	$('#search-input').on('compositionend', function () {
+		var $this = $(this);
+		// 结束汉语拼音输入并生成汉字时，解锁搜索框，进行搜索
+		cpLock = false;
+		// 接下去放ajax请求生成下拉框内容
+		if($('#search-input').val()) {
+			//隐藏热搜
+			$('.hot-search').hide();
+			//隐藏历史
+			$('.history-search').hide();
+			//展示结果
+			$('.search-result').find('.search-result-item').remove();
+			// $('.no-result').before(searchHtml).hide();
+			$('.search-result').show();
+		} else {
+			//展示热搜
+			$('.hot-search').show();
+			//展示历史
+			$('.history-search').show();
+			$('.search-result').hide();
+		}
+	});
+	$('#search-input').bind('input propertychange', function () {
+		var $this = $(this);
+		if (!cpLock) {
+			// 接下去放ajax请求生成下拉框内容
+			if($('#search-input').val()) {
+				console.log(222);
+			} else {
+				//展示热搜
+				$('.hot-search').show();
+				//展示历史
+				$('.history-search').show();
+				$('.search-result').hide();
+			}
+		}
+	});	
+	// 取消搜索
+	$('#cancelBtn').click(function(){
+		$(this).hide(); // 自身也要隐藏
+		$('#search-wrap').hide();
+		$('#search_list').css('width','8.5rem').find('input#search-input').css('width','7.5rem');
+	});
+</script>
+</body>
+</html>
